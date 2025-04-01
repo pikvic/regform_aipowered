@@ -2,6 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
+migrations/
+database.db
+alembic.ini
+
 
 # C extensions
 *.so

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Регистрация</title>
+</head>
+<body>
+    <h1>Завершите регистрацию</h1>
+    <form method="post" action="/submit">
+        <input type="hidden" name="fio" value="{{ request.session.user_data.fio }}">
+        <input type="hidden" name="email" value="{{ request.session.user_data.email }}">
+        
+        <label>Telegram:
+            <input type="text" name="telegram" required>
+        </label>
+        <br>
+        <label>VK:
+            <input type="text" name="vk" required>
+        </label>
+        <br>
+        <button type="submit">Отправить</button>
+    </form>
+</body>
+</html>
