@@ -1,12 +1,8 @@
-from pydantic_settings import BaseSettings
+import os
+from dotenv import load_dotenv
 
-class Settings(BaseSettings):
-    yandex_client_id: str
-    yandex_client_secret: str
-    secret_key: str
-    database_url: str
-    
-    class Config:
-        env_file = ".env"
+load_dotenv()
 
-settings = Settings()
+TOKEN = os.getenv("TOKEN")
+SECRET_KEY = os.getenv("SECRET_KEY")
+DATABASE = os.getenv("DATABASE")
