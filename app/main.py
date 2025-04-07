@@ -121,5 +121,5 @@ def download():
 @app.post("/admin/insert")
 def admin_insert():
     print(request.headers)
-    print(request.get_json())
+    print(request.get_data())
     return "Inserted", 200
