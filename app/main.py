@@ -1,8 +1,10 @@
 from flask import Flask, request, render_template, url_for, redirect, session, make_response, send_file, Response
 
-from config import SECRET_KEY, DATABASE, SUPERADMIN
-from database import Database
+from .config import SECRET_KEY, DATABASE, SUPERADMIN
+from .database import Database
 import csv
+
+from email.utils import parseaddr
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -10,10 +12,14 @@ app.secret_key = SECRET_KEY
 db = Database(DATABASE)
 
 db.init_database()
-try:
-    db.insert_user("pikvic@list.ru")
-except:
-    pass
+
+def is_valid_email(email):
+    mail = parseaddr(email)[-1]
+    if not mail:
+        return False
+    if not "@dvfu.ru" in mail:
+        return False
+    return True
 
 def parse_csv():
     with open('data.csv', encoding="utf-8") as csvfile:
@@ -21,22 +27,22 @@ def parse_csv():
         reader = csv.DictReader(csvfile)
         for row in reader:
             email = list(row.values())[5]
-            db.insert_user(email)
+            if is_valid_email(email):
+                db.insert_user(email)
    
 @app.get("/")
 def index():
     email = session.get('email')
     if not email:
-        return render_template('index.html')
+        return render_template('index.html', message=None)
     else:
         return redirect(url_for("me"))
 
 @app.get("/me")
 def me():
     email = session.get("email")
-    print("me email", email)
     if not email:
-        redirect(url_for('index'))
+        return redirect(url_for('index'))
     number = db.get_number(email)
     return render_template('number.html', number=number)
 
@@ -47,10 +53,10 @@ def logout():
 
 @app.post("/")
 def index_post():
-    print(request.form)
     if request.form:
         email = request.form.get("email", None)
-        if not email:
+        
+        if not email or not is_valid_email(email):
             # show index with error message
             return redirect(url_for('index'))
         user_id = db.get_user_id(email)
@@ -120,11 +126,11 @@ def download():
 
 @app.post("/admin/insert")
 def admin_insert():
-    from email.utils import parseaddr
     referrer = request.headers.get("referrer")
     email = request.get_data().decode("utf-8")
     email = parseaddr(email)[-1]
     if not email or referrer != "yandex":
         return "Not inserted", 200
-    db.insert_user(email)
+    if is_valid_email(email):
+        db.insert_user(email)
     return "Inserted", 200
