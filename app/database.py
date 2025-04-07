@@ -35,18 +35,27 @@ class Database():
         self.__execute(CREATE_NUMBERS_QUERY)
 
     def insert_user(self, email):
-        query = "INSERT INTO users (email) VALUES (?)"
-        params = (email,)
-        self.__execute(query, params)
+        if not self.get_user_id(email):
+            query = "INSERT INTO users (email) VALUES (?)"
+            params = (email,)
+            self.__execute(query, params)
+
+    def get_users_numbers(self):
+        with self.__connect() as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("SELECT u.id as id, u.email as email, n.id as number FROM users as u LEFT JOIN numbers as n ON u.id = n.user_id ORDER BY n.id, u.email")
+            result = cursor.fetchall()
+        return result    
 
     def get_user_id(self, email):
         with self.__connect() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
             result = cursor.fetchone()
-            if not result:
-                return None
-            return result[0]
+        if not result:
+            return None
+        return result[0]
 
     def insert_number(self, user_id):
         with self.__connect() as conn:
@@ -56,11 +65,11 @@ class Database():
     def get_number(self, email):
         with self.__connect() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT numbers.id FROM users LEFT JOIN numbers ON users.id = numbers.user_id WHERE users.email = ?", (email,))
+            cursor.execute("SELECT numbers.id FROM users INNER JOIN numbers ON users.id = numbers.user_id WHERE users.email = ?", (email,))
             result = cursor.fetchone()
-            if not result:
-                return
-            return result[0]
+        if not result:
+            return
+        return result[0]
 
 
 

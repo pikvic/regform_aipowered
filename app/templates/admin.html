@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Admin
+{% endblock title %}
+{% block body %}
+    <div class="row">
+        <div class="col">
+            <h2>Admin</h2>
+            <h5><a href="{{ url_for('index') }}">Home</a></h5>
+            {% if logged %}
+                <h5><a href="{{ url_for('admin_logout') }}">Logout</a></h5>
+                <form action="/admin/upload" method="post" enctype="multipart/form-data">
+                    <input id="secret" name="secret" type="password" value="{{ secret }}" hidden>
+                    <label for="file">CSV File</label>
+                    <input id="file" name="file" type="file">
+                    <button class="btn btn-primary" type="submin">Upload</button>
+                </form>
+                <h3>Users</h3>
+                <h5><a href="/admin/download">Download</a></h5>
+                <table >
+                    <tr>
+                        <th>id</th>
+                        <th>email</th>
+                        <th>number</th>
+                    </tr>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user["id"] }}</td>
+                            <td>{{ user["email"] }}</td>
+                            <td>{{ user["number"] }}</td>
+                        </tr>
+
+                    
+                    {% endfor %}
+                </table>
+            {% else %}
+                <form action="/admin/login" method="post">
+                    <label for="secret">Pass:</label>
+                    <input id="secret" type="password" name="secret">
+                    <button class="btn btn-primary" type="submit">Send</button>
+                </form>
+            {% endif %}
+            
+        </div>
+    </div>
+{% endblock body %}
