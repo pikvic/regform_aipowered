@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, url_for, redirect, session, make_response, send_file, Response
 
-from .config import SECRET_KEY, DATABASE, SUPERADMIN
-from .database import Database
+from config import SECRET_KEY, DATABASE, SUPERADMIN
+from database import Database
 import csv
 
 app = Flask(__name__)
