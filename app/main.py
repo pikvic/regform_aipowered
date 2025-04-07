@@ -122,7 +122,7 @@ def download():
 def admin_insert():
     from email.utils import parseaddr
     referrer = request.headers.get("referrer")
-    email = request.get_data()
+    email = str(request.get_data())
     email = parseaddr(email)[-1]
     if not email or referrer != "yandex":
         return "Not inserted", 200
